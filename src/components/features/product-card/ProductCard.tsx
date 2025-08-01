@@ -1,5 +1,7 @@
 import { Product } from "@/lib/definitions";
-import { Card, Image, Button } from "@chakra-ui/react";
+import { Card, Image } from "@chakra-ui/react";
+import AppButton from "../../ui/AppButton";
+
 // // cart
 // import { useSelector, useDispatch } from 'react-redux';
 // import { cartCount, add, remove } from './cartSlice'
@@ -47,14 +49,11 @@ function ProductCard({
       <>
         {showButton ? (
           <>
-            <Button
-              backgroundColor={
-                productIsAddedToCart ? "green.100" : "green.emphasized"
-              }
-              color={productIsAddedToCart ? "green" : "white"}
-              onClick={() => handleAddToCart(product.id)}>
+            <AppButton
+              variant={productIsAddedToCart ? "secondary" : "primary"}
+              onClick={() => handleAddToCart(product)}>
               {productIsAddedToCart ? "Remove from cart" : "Add to cart"}
-            </Button>
+            </AppButton>
           </>
         ) : null}
       </>
@@ -63,9 +62,7 @@ function ProductCard({
 
   return (
     <>
-      <Card.Root
-        id={`product-${product.id}`}
-        variant="subtle">
+      <Card.Root id={`product-${product.id}`} variant="subtle">
         <Card.Header padding={0}>
           <ProductImage />
         </Card.Header>

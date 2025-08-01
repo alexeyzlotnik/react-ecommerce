@@ -1,5 +1,6 @@
 // import { Button } from "@chakra-ui/react";
-import { Button, Grid, GridItem, Box, AbsoluteCenter } from "@chakra-ui/react";
+import { Grid, GridItem, Box, AbsoluteCenter } from "@chakra-ui/react";
+import AppButton from "../../ui/AppButton";
 
 function LoadMoreButton({
   loading = false,
@@ -18,14 +19,13 @@ function LoadMoreButton({
     <>
       <Box position="relative" h="100px">
         <AbsoluteCenter>
-          <Button
-            backgroundColor="green.emphasized"
-            color="white"
+          <AppButton
+            variant="primary"
             onClick={onClick}
             loading={loading}
             loadingText="Loading...">
             {children ? children : "Load more"}
-          </Button>
+          </AppButton>
         </AbsoluteCenter>
       </Box>
     </>

@@ -38,3 +38,11 @@ export interface ProductCanLoadMore {
   value: boolean;
   count: number;
 }
+
+export interface CartProduct {
+  id: number;
+  name: string;
+  brand: string;
+  price: number;
+  originalPrice?: number;
+}

@@ -7,6 +7,7 @@ import { ProductService } from "../../../services/ProductService";
 // cart
 import { useSelector, useDispatch } from "react-redux";
 import { cartCount, add, remove } from "../cart/cartSlice";
+import { CartProduct, Product } from "@/lib/definitions";
 
 const _numberToLoad: number = 4;
 const productService = new ProductService(_numberToLoad);
@@ -30,10 +31,23 @@ function ProductList() {
     return cartItems.filter(item => item.id === productId).length > 0;
   };
 
-  const handleAddToCart = (productId: number) => {
-    isProductInCart(productId)
-      ? dispatch(remove(productId))
-      : dispatch(add(productId));
+  const formatProductForCart = (product: Product): CartProduct => {
+    if (!product) return;
+
+    const { id, name, brand, price } = product;
+
+    return {
+      id: id,
+      name: name,
+      brand: brand,
+      price: price,
+    };
+  };
+
+  const handleAddToCart = (product: Product): void => {
+    isProductInCart(product.id)
+      ? dispatch(remove(product.id))
+      : dispatch(add(formatProductForCart(product)));
   };
 
   const handleLoadMore = () => {
