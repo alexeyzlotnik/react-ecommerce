@@ -1,14 +1,16 @@
-import { useState } from "react";
 import "./app.css";
 import ProductList from "../components/features/product-list/ProductList";
 import DefaultLayout from "../components/layouts/DefaultLayout";
-import Cart from "../components/features/cart/Cart";
+import { StrapiProductService } from "../services/StrapiProductService";
+
+const _numberToLoad: number = 4;
+const productService = new StrapiProductService(_numberToLoad);
 
 function App() {
   return (
     <>
       <DefaultLayout>
-        <ProductList />
+        <ProductList service={productService} />
       </DefaultLayout>
     </>
   );

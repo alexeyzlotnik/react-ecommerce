@@ -4,7 +4,14 @@ export interface Product {
   brand: string;
   price: number;
   originalPrice?: number;
-  image: string;
+  image: Array<{
+    url: string;
+    name: string;
+  }>;
+  image_thumbnail: Array<{
+    url: string;
+    name: string;
+  }>;
   category: "sunglasses" | "eyeglasses" | "reading-glasses";
   frameType: "full-rim" | "half-rim" | "rimless";
   frameShape:
@@ -31,7 +38,6 @@ export interface Product {
 export interface ProductResponse {
   data: Product[];
   total: number;
-  availableToLoad: number;
 }
 
 export interface ProductCanLoadMore {
@@ -45,4 +51,17 @@ export interface CartProduct {
   brand: string;
   price: number;
   originalPrice?: number;
+  image?: Array<{
+    url: string;
+    name: string;
+  }>;
+  image_thumbnail?: Array<{
+    url: string;
+    name: string;
+  }>;
+}
+
+// Redux store types
+export interface RootState {
+  cart: CartProduct[];
 }

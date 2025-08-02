@@ -11,7 +11,8 @@ interface ProductCardIProps {
   showPrice?: boolean;
   showButton?: boolean;
   productIsAddedToCart?: boolean;
-  handleAddToCart: () => void;
+  colSpan?: number;
+  handleAddToCart: (product: Product) => void;
 }
 
 function ProductCard({
@@ -26,15 +27,16 @@ function ProductCard({
 
   // const isProductAddedToCart = cartItems.filter(el => el.id === product.id).length > 0
 
-  const ProductImage = () => (
-    <Image
-      src={product.image}
-      alt={product.name}
-      height={{ base: 150, md: 180, lg: 200 }}
-      roundedTop="md"
-      fit="cover"
-    />
-  );
+  const ProductImage = () =>
+    product.image_thumbnail ? (
+      <Image
+        src={product.image_thumbnail[0]?.url}
+        alt={product.name}
+        height={{ base: 150, md: 180, lg: 200 }}
+        roundedTop="md"
+        fit="cover"
+      />
+    ) : null;
 
   const ProductBody = () => (
     <>

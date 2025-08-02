@@ -1,5 +1,4 @@
-// import { Button } from "@chakra-ui/react";
-import { Grid, GridItem, Box, AbsoluteCenter } from "@chakra-ui/react";
+import { Box, AbsoluteCenter } from "@chakra-ui/react";
 import AppButton from "../../ui/AppButton";
 
 function LoadMoreButton({

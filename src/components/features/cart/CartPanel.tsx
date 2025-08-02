@@ -1,9 +1,8 @@
 import { Drawer, Portal, CloseButton } from "@chakra-ui/react";
 import AppButton from "../../ui/AppButton";
-import { CartProduct } from "../../../lib/definitions";
 import { LuArrowRightFromLine, LuTrash } from "react-icons/lu";
 import { useSelector, useDispatch } from "react-redux";
-import { cartCount, remove, clear } from "./cartSlice";
+import { remove, clear } from "./cartSlice";
 import { Table } from "@chakra-ui/react";
 
 interface CartPanelProps {
@@ -39,12 +38,33 @@ export default function CartPanel({ open = false, onClose }: CartPanelProps) {
                     <Table.Cell>{item.name}</Table.Cell>
                     <Table.Cell>{item.price}</Table.Cell>
                     <Table.Cell textAlign="end">
-                      <AppButton variant="danger">Remove</AppButton>
+                      <AppButton
+                        variant="danger"
+                        onClick={() => dispatch(remove(item.id))}>
+                        Remove
+                      </AppButton>
                     </Table.Cell>
                   </Table.Row>
                 ))}
               </Table.Body>
             </Table.Root>
+          </>
+        )}
+      </>
+    );
+  };
+
+  const FooterButtons = () => {
+    return (
+      <>
+        {items.length === 0 ? null : (
+          <>
+            <AppButton variant="danger" onClick={() => dispatch(clear())}>
+              Clear cart <LuTrash />
+            </AppButton>
+            <AppButton>
+              Proceed to checkout <LuArrowRightFromLine />
+            </AppButton>
           </>
         )}
       </>
@@ -64,12 +84,7 @@ export default function CartPanel({ open = false, onClose }: CartPanelProps) {
               <ProductsList />
             </Drawer.Body>
             <Drawer.Footer>
-              <AppButton variant="danger" onClick={() => dispatch(clear())}>
-                Clear cart <LuTrash />
-              </AppButton>
-              <AppButton>
-                Proceed to checkout <LuArrowRightFromLine />
-              </AppButton>
+              <FooterButtons />
             </Drawer.Footer>
             <Drawer.CloseTrigger asChild>
               <CloseButton size="sm" />

@@ -1,37 +1,38 @@
 import { useCallback, useEffect, useState, useRef } from "react";
 import ProductCard from "../product-card/ProductCard";
 import LoadMoreButton from "../load-more-button/LoadMoreButton";
-import { Button, Grid, GridItem } from "@chakra-ui/react";
-// import { mockProducts } from "../../../data/data"
-import { ProductService } from "../../../services/ProductService";
+import { Grid } from "@chakra-ui/react";
+
 // cart
 import { useSelector, useDispatch } from "react-redux";
-import { cartCount, add, remove } from "../cart/cartSlice";
-import { CartProduct, Product } from "@/lib/definitions";
+import { add, remove } from "../cart/cartSlice";
+import { CartProduct, Product, RootState } from "@/lib/definitions";
+import { IProductService } from "@/lib/interfaces";
 
-const _numberToLoad: number = 4;
-const productService = new ProductService(_numberToLoad);
+// const _numberToLoad: number = 4;
+// const productService = new ProductService(_numberToLoad);
+// const productService = new StrapiProductService(_numberToLoad);
 
-function ProductList() {
-  const [products, setProducts] = useState([]);
-  const [loadMoreLoading, setLoadMoreLoading] = useState(false);
-  const [canLoadMore, setCanLoadMore] = useState(true);
-  const hasInitialized = useRef(false);
+function ProductList({ service }: { service: IProductService }) {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loadMoreLoading, setLoadMoreLoading] = useState<boolean>(false);
+  const [canLoadMore, setCanLoadMore] = useState<boolean>(true);
+  const hasInitialized = useRef<boolean>(false);
 
-  const cartItems = useSelector(state => state.cart);
+  const cartItems = useSelector((state: RootState) => state.cart);
   const dispatch = useDispatch();
 
-  const fetchProducts = useCallback(() => {
-    const data = productService.getProducts();
+  const fetchProducts = useCallback(async () => {
+    const data = await service.getProducts();
     return data;
-  }, []); // Empty dependency array since productService is stable
+  }, [service]);
 
   // helper function
   const isProductInCart = (productId: number) => {
     return cartItems.filter(item => item.id === productId).length > 0;
   };
 
-  const formatProductForCart = (product: Product): CartProduct => {
+  const formatProductForCart = (product: Product): CartProduct | undefined => {
     if (!product) return;
 
     const { id, name, brand, price } = product;
@@ -45,24 +46,34 @@ function ProductList() {
   };
 
   const handleAddToCart = (product: Product): void => {
-    isProductInCart(product.id)
-      ? dispatch(remove(product.id))
-      : dispatch(add(formatProductForCart(product)));
+    if (isProductInCart(product.id)) {
+      dispatch(remove(product.id));
+    } else {
+      const cartProduct = formatProductForCart(product);
+      if (cartProduct) {
+        dispatch(add(cartProduct));
+      }
+    }
   };
 
-  const handleLoadMore = () => {
+  const handleLoadMore = async () => {
     setLoadMoreLoading(true);
 
-    setTimeout(() => {
-      // simulate promise delay
-      const newProductsResponse = fetchProducts();
-      setProducts(prevProducts => [
-        ...prevProducts,
-        ...newProductsResponse.data,
-      ]);
+    try {
+      const newProductsResponse = await fetchProducts();
+
+      if (newProductsResponse?.data) {
+        setProducts(prevProducts => [
+          ...prevProducts,
+          ...newProductsResponse.data,
+        ]);
+      }
+      setCanLoadMore(service.canLoadMore().value);
+    } catch (error) {
+      console.error("Error loading more products:", error);
+    } finally {
       setLoadMoreLoading(false);
-      setCanLoadMore(productService.canLoadMore().value);
-    }, 500);
+    }
   };
 
   useEffect(() => {
@@ -70,16 +81,27 @@ function ProductList() {
     if (hasInitialized.current) return;
     hasInitialized.current = true;
 
-    const initialProducts = fetchProducts();
-    setProducts(initialProducts.data);
-    setCanLoadMore(productService.canLoadMore().value);
-  }, []);
+    const loadInitialProducts = async () => {
+      try {
+        const initialProducts = await fetchProducts();
+        if (initialProducts?.data) {
+          setProducts(initialProducts.data);
+          setCanLoadMore(service.canLoadMore().value);
+        }
+      } catch (error) {
+        console.error("Error loading initial products:", error);
+      }
+    };
+
+    loadInitialProducts();
+  }, [service, fetchProducts]);
 
   const productList =
-    products.length === 0 ? (
+    products?.length === 0 ? (
+      // TODO: add skeleton here
       <p>List empty</p>
     ) : (
-      products.map(product => (
+      products?.map(product => (
         <ProductCard
           colSpan={1}
           key={product.id}
@@ -104,14 +126,16 @@ function ProductList() {
         {productList}
       </Grid>
 
-      <LoadMoreButton
-        loading={loadMoreLoading}
-        canLoadMore={canLoadMore}
-        onClick={handleLoadMore}>
-        {loadMoreLoading
-          ? "Loading..."
-          : `Load + ${productService.canLoadMore().count} more products`}
-      </LoadMoreButton>
+      {products?.length > 0 && (
+        <LoadMoreButton
+          loading={loadMoreLoading}
+          canLoadMore={canLoadMore}
+          onClick={handleLoadMore}>
+          {loadMoreLoading
+            ? "Loading..."
+            : `Load + ${service.canLoadMore().count} more products`}
+        </LoadMoreButton>
+      )}
     </>
   );
 }
