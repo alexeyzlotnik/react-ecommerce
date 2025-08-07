@@ -1,0 +1,18 @@
+.container {
+  padding-top: 50px;
+  padding-bottom: 50px;
+}
+
+header {
+  padding-bottom: 50px;
+  display: flex;
+  justify-content: center;
+  column-gap: 1rem;
+}
+
+footer {
+  padding-top: 50px;
+  display: flex;
+  justify-content: center;
+  column-gap: 1rem;
+}

@@ -1,0 +1,13 @@
+.menu-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.menu {
+  display: flex;
+  column-gap: 1rem;
+}
+
+/* .menu-item__link {
+  color: #fff;
+} */

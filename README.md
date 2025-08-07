@@ -1,21 +1,18 @@
-# React + TypeScript + Vite
+# React E-commerce Monorepo
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A full-stack e-commerce application built with React (frontend) and Node.js (backend) in a monorepo structure.
 
-While this project uses React, Vite supports many popular JS frameworks. [See all the supported frameworks](https://vitejs.dev/guide/#scaffolding-your-first-vite-project).
+## Project Structure
 
-## Deploy Your Own
-
-Deploy your own Vite project with Vercel.
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/vercel/examples/tree/main/framework-boilerplates/vite-react&template=vite-react)
-
-_Live Example: https://vite-react-example.vercel.app_
-
-### Deploying From Your Terminal
-
-You can deploy your new Vite project with a single command from your terminal using [Vercel CLI](https://vercel.com/download):
-
-```shell
-$ vercel
+```
+react-ecommerce/
+├── frontend/          # React application (Vite + TypeScript)
+│   ├── src/          # React source code
+│   ├── package.json  # Frontend dependencies
+│   └── ...
+├── backend/          # Node.js API server
+│   ├── src/          # Backend source code
+│   ├── package.json  # Backend dependencies
+│   └── ...
+└── package.json      # Root workspace configuration
 ```
