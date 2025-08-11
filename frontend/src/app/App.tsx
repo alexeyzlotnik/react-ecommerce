@@ -1,6 +1,5 @@
 import "./app.css";
 import DefaultLayout from "../components/layouts/DefaultLayout";
-import AuthLayout from "../components/layouts/AuthLayout";
 import { Routes, Route } from "react-router";
 import { RequireNoAuth } from "../components/auth/ProtectedRoute";
 

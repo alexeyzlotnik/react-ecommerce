@@ -1,5 +1,6 @@
 export interface Product {
   id: number;
+  documentId: number;
   name: string;
   price: number;
   originalPrice?: number;
@@ -19,7 +20,18 @@ export interface Product {
 }
 
 export interface ProductResponse {
+  data: Product[] | Product;
+  total: number;
+}
+
+// More specific types for different use cases
+export interface ProductsListResponse {
   data: Product[];
+  total: number;
+}
+
+export interface SingleProductResponse {
+  data: Product;
   total: number;
 }
 
@@ -52,4 +64,25 @@ export interface CartProduct {
 // Redux store types
 export interface RootState {
   cart: CartProduct[];
+}
+
+export interface LoginResponse {
+  success: boolean;
+  message: string;
+  token?: string;
+  user?: {
+    id: number;
+    email: string;
+    name: string;
+  };
+}
+
+export interface VerifyTokenResponse {
+  valid: boolean;
+  user?: {
+    id: number;
+    email: string;
+    name: string;
+  };
+  message?: string;
 }

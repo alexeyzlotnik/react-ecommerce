@@ -1,30 +1,16 @@
-import { ProductCanLoadMore, Product, ProductResponse } from "./definitions";
+import {
+  ProductCanLoadMore,
+  ProductResponse,
+  LoginResponse,
+  VerifyTokenResponse,
+} from "./definitions";
 
 export interface IProductService {
-  getProducts(): Promise<ProductResponse | undefined>;
-  getProduct(id: number): Promise<Product | undefined>;
+  getProducts(filters?: {
+    category?: string | null;
+  }): Promise<ProductResponse | undefined>;
+  getProduct(id: string): Promise<ProductResponse | undefined>;
   canLoadMore(): ProductCanLoadMore;
-}
-
-export interface LoginResponse {
-  success: boolean;
-  message: string;
-  token?: string;
-  user?: {
-    id: number;
-    email: string;
-    name: string;
-  };
-}
-
-export interface VerifyTokenResponse {
-  valid: boolean;
-  user?: {
-    id: number;
-    email: string;
-    name: string;
-  };
-  message?: string;
 }
 
 export interface IAuthService {

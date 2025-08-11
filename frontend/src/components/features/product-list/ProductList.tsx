@@ -9,7 +9,13 @@ import { add, remove } from "../cart/cartSlice";
 import { CartProduct, Product, RootState } from "@/lib/definitions";
 import { IProductService } from "@/lib/interfaces";
 
-function ProductList({ service }: { service: IProductService }) {
+function ProductList({
+  service,
+  category,
+}: {
+  service: IProductService;
+  category?: string | null;
+}) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loadMoreLoading, setLoadMoreLoading] = useState<boolean>(false);
   const [canLoadMore, setCanLoadMore] = useState<boolean>(true);
@@ -19,9 +25,9 @@ function ProductList({ service }: { service: IProductService }) {
   const dispatch = useDispatch();
 
   const fetchProducts = useCallback(async () => {
-    const data = await service.getProducts();
+    const data = await service.getProducts({ category });
     return data;
-  }, [service]);
+  }, [service, category]);
 
   // helper function
   const isProductInCart = (productId: number) => {
@@ -59,10 +65,12 @@ function ProductList({ service }: { service: IProductService }) {
       const newProductsResponse = await fetchProducts();
 
       if (newProductsResponse?.data) {
-        setProducts(prevProducts => [
-          ...prevProducts,
-          ...newProductsResponse.data,
-        ]);
+        // Ensure we're working with an array before spreading
+        const newProducts = Array.isArray(newProductsResponse.data)
+          ? newProductsResponse.data
+          : [newProductsResponse.data];
+
+        setProducts(prevProducts => [...prevProducts, ...newProducts]);
       }
       setCanLoadMore(service.canLoadMore().value);
     } catch (error) {
@@ -81,7 +89,12 @@ function ProductList({ service }: { service: IProductService }) {
       try {
         const initialProducts = await fetchProducts();
         if (initialProducts?.data) {
-          setProducts(initialProducts.data);
+          // Ensure we're working with an array
+          const productsArray = Array.isArray(initialProducts.data)
+            ? initialProducts.data
+            : [initialProducts.data];
+
+          setProducts(productsArray);
           setCanLoadMore(service.canLoadMore().value);
         }
       } catch (error) {

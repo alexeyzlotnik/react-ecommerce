@@ -1,7 +1,7 @@
 import { Product } from "@/lib/definitions";
 import { Card, Image } from "@chakra-ui/react";
 import AppButton from "../../ui/AppButton";
-import { Link } from "react-router";
+import { Link, useNavigate, Navigate } from "react-router";
 
 // // cart
 // import { useSelector, useDispatch } from 'react-redux';
@@ -23,6 +23,8 @@ function ProductCard({
   productIsAddedToCart = false,
   handleAddToCart,
 }: ProductCardIProps) {
+  const navigate = useNavigate();
+
   const ProductImage = () =>
     product.image_thumbnail ? (
       <Image
@@ -31,19 +33,23 @@ function ProductCard({
         height={{ base: 150, md: 180, lg: 200 }}
         roundedTop="md"
         fit="cover"
+        className="cursor-pointer"
+        onClick={() => navigate(`/product/${product.documentId}`)}
       />
     ) : null;
 
   const ProductBody = () => (
     <>
-      <Link to={`product/${product.id}`}>
+      <Link to={`/product/${product.documentId}`}>
         <h3>{product.name}</h3>
       </Link>
       <span>
         {product.category && (
           <>
             Brand:{" "}
-            <Link to={`/category/${product.category.slug}`}>
+            <Link
+              to={`/category/${product.category.slug}`}
+              className="!underline">
               {product.category?.name}
             </Link>
           </>

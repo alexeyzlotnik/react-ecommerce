@@ -13,7 +13,8 @@
     "build:backend": "npm run build --workspace=backend",
     "install:all": "npm install",
     "lint:frontend": "npm run lint --workspace=frontend",
-    "lint:backend": "npm run lint --workspace=backend"
+    "lint:backend": "npm run lint --workspace=backend",
+    "start": "npm run start --workspace=frontend"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
