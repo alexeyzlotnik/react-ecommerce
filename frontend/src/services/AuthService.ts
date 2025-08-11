@@ -1,8 +1,5 @@
-import {
-  IAuthService,
-  LoginResponse,
-  VerifyTokenResponse,
-} from "@/lib/interfaces";
+import { IAuthService } from "@/lib/interfaces";
+import { LoginResponse, VerifyTokenResponse } from "@/lib/definitions";
 
 export class AuthService implements IAuthService {
   private BASE_URL = "http://localhost:3000";

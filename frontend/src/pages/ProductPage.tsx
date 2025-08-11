@@ -13,7 +13,7 @@ const service = new StrapiProductService();
 
 export default function ProductPage() {
   const { product: productId } = useParams();
-  const [product, setProduct] = useState<Product | null>(null);
+  const [product, setProduct] = useState<Product | undefined>(undefined);
   const navigate = useNavigate();
   const viewedProducts = useViewedProducts();
 
@@ -39,8 +39,13 @@ export default function ProductPage() {
     const load = async () => {
       try {
         const result = await loadProduct();
-        if (result) {
-          setProduct(result.data);
+        if (result && result.data) {
+          // Handle both single product and array cases
+          if (Array.isArray(result.data)) {
+            setProduct(result.data[0]);
+          } else {
+            setProduct(result.data);
+          }
         }
       } catch (error) {
         console.log(error);

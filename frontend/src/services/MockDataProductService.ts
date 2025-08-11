@@ -53,13 +53,13 @@ export class MockDataProductService implements IProductService {
     };
   }
 
-  async getProduct(id: number): Promise<Product | undefined> {
+  async getProduct(id: string): Promise<ProductResponse | undefined> {
     if (!id) throw new Error("no product found");
 
     try {
       const data = await new Promise<Product | undefined>((resolve, reject) => {
         setTimeout(() => {
-          const product = mockProducts.find(el => el.id === id);
+          const product = mockProducts.find(el => el.id === parseInt(id));
 
           if (product) {
             resolve(product);
@@ -69,7 +69,13 @@ export class MockDataProductService implements IProductService {
         }, 300);
       });
 
-      return data;
+      if (data) {
+        return {
+          data: data,
+          total: 1,
+        };
+      }
+      return undefined;
     } catch (error) {
       console.log(`Error fetching product: ${id}`, error);
       return undefined;

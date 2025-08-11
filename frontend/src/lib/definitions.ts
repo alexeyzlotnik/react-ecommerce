@@ -2,6 +2,7 @@ export interface Product {
   id: number;
   documentId: number;
   name: string;
+  brand: string;
   price: number;
   originalPrice?: number;
   image: Array<{
