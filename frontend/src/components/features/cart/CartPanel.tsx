@@ -4,6 +4,7 @@ import { LuArrowRightFromLine, LuTrash } from "react-icons/lu";
 import { useSelector, useDispatch } from "react-redux";
 import { remove, clear } from "./cartSlice";
 import { Table } from "@chakra-ui/react";
+import { RootState } from "@/lib/definitions";
 
 interface CartPanelProps {
   open: boolean;
@@ -11,7 +12,7 @@ interface CartPanelProps {
 }
 
 export default function CartPanel({ open = false, onClose }: CartPanelProps) {
-  const items = useSelector(state => state.cart);
+  const items = useSelector((state: RootState) => state.cart);
   const dispatch = useDispatch();
 
   const ProductsList = () => {

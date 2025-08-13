@@ -8,7 +8,6 @@ import { useState } from "react";
 
 function Cart() {
   const count = useSelector(cartCount);
-  const cartItems = useSelector(state => state.cart);
 
   const [cartOpen, setCartOpen] = useState(false);
 
@@ -19,11 +18,7 @@ function Cart() {
         {count}
       </Button>
 
-      <CartPanel
-        open={cartOpen}
-        items={cartItems}
-        onClose={() => setCartOpen(false)}
-      />
+      <CartPanel open={cartOpen} onClose={() => setCartOpen(false)} />
     </>
   );
 }

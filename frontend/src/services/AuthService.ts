@@ -20,7 +20,7 @@ export class AuthService implements IAuthService {
 
     try {
       const response = await fetch(
-        `${this.BASE_URL}/auth/login`,
+        `${this.BASE_URL}/api/auth/login`,
         requestOptions
       );
       const data = await response.json();
@@ -41,7 +41,7 @@ export class AuthService implements IAuthService {
 
     try {
       const response = await fetch(
-        `${this.BASE_URL}/auth/verify`,
+        `${this.BASE_URL}/api/auth/verify`,
         requestOptions
       );
       const data = await response.json();
@@ -65,7 +65,7 @@ export class AuthService implements IAuthService {
   async logout(): Promise<void> {
     try {
       // Call backend logout endpoint to invalidate token
-      const response = await fetch(`${this.BASE_URL}/auth/logout`, {
+      const response = await fetch(`${this.BASE_URL}/api/auth/logout`, {
         method: "POST",
         credentials: "include",
       });

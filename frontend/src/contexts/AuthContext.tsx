@@ -6,7 +6,7 @@ import React, {
   ReactNode,
 } from "react";
 import { AuthService } from "../services/AuthService";
-import { LoginResponse, VerifyTokenResponse } from "../lib/interfaces";
+import { LoginResponse, VerifyTokenResponse } from "../lib/definitions";
 
 interface User {
   id: number;

@@ -4,10 +4,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "nodemon src/index.ts",
-    "build": "tsc",
+    "dev": "nodemon src/index.js",
+    "build": "npm run build:frontend",
+    "build:frontend": "cd ../frontend && npm run build && mkdir -p ../backend/public && cp -r dist/* ../backend/public/",
     "start": "node src/index.js",
-    "lint": "eslint src/**/*.ts"
+    "lint": "eslint src/**/*.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

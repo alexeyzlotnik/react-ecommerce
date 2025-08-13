@@ -1,7 +1,7 @@
 import { Product } from "@/lib/definitions";
 import { Card, Image } from "@chakra-ui/react";
 import AppButton from "../../ui/AppButton";
-import { Link, useNavigate, Navigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 // // cart
 // import { useSelector, useDispatch } from 'react-redux';

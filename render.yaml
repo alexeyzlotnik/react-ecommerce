@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: react-ecommerce-monolith
+    env: node
+    buildCommand: npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+    healthCheckPath: /
+    autoDeploy: true

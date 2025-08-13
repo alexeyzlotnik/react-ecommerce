@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { CartProduct } from "@/lib/definitions";
+import { CartProduct, RootState } from "@/lib/definitions";
 
 export const cartSlice = createSlice({
   name: "cart",
@@ -17,13 +17,13 @@ export const cartSlice = createSlice({
       return state.filter((item: CartProduct) => item.id !== action.payload);
     },
     clear: () => {
-      return [];
+      return [] as CartProduct[];
     },
   },
 });
 
 export const { add, remove, clear } = cartSlice.actions;
 
-export const cartCount = (state: { cart: CartProduct[] }) => state.cart.length;
+export const cartCount = (state: RootState) => state.cart.length;
 
 export default cartSlice.reducer;

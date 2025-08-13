@@ -11,10 +11,12 @@
     "dev:backend": "npm run dev --workspace=backend",
     "build:frontend": "npm run build --workspace=frontend",
     "build:backend": "npm run build --workspace=backend",
+    "build:monolith": "npm run build:frontend && npm run build:backend && mkdir -p backend/public && cp -r frontend/dist/* backend/public/",
     "install:all": "npm install",
     "lint:frontend": "npm run lint --workspace=frontend",
     "lint:backend": "npm run lint --workspace=backend",
-    "start": "npm run start --workspace=frontend"
+    "start": "npm run start --workspace=backend",
+    "deploy:monolith": "./deploy-monolith.sh"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
