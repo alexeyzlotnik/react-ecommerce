@@ -2,7 +2,7 @@ services:
   - type: web
     name: react-ecommerce-monolith
     env: node
-    buildCommand: npm run build
+    buildCommand: npm run build:monolith
     startCommand: npm start
     envVars:
       - key: NODE_ENV
