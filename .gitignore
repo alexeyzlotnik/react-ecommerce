@@ -15,6 +15,7 @@ dist-ssr
 # Build artifacts
 backend/public
 *.tsbuildinfo
+tsconfig.*.tsbuildinfo
 
 # Environment variables
 .env
