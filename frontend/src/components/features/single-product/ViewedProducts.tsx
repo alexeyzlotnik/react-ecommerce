@@ -1,6 +1,7 @@
 import ProductCard from "../product-card/ProductCard";
 import { Grid } from "@chakra-ui/react";
 import { useViewedProducts } from "../../../hooks/useViewedProducts";
+import { useCart } from "../../../hooks/useCart";
 
 export default function ViewedProducts({
   currentProductId,
@@ -9,6 +10,7 @@ export default function ViewedProducts({
 }) {
   const { viewedProducts, hasViewedProducts } =
     useViewedProducts(currentProductId);
+  const { addToCart, isProductInCart } = useCart();
 
   if (!hasViewedProducts) {
     return null;
@@ -30,7 +32,8 @@ export default function ViewedProducts({
             key={product.id}
             colSpan={1}
             product={product}
-            handleAddToCart={() => {}}
+            productIsAddedToCart={isProductInCart(product.id)}
+            handleAddToCart={() => addToCart(product)}
           />
         ))}
       </Grid>

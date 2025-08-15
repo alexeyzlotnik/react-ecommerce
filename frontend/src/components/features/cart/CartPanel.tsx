@@ -1,10 +1,8 @@
 import { Drawer, Portal, CloseButton } from "@chakra-ui/react";
 import AppButton from "../../ui/AppButton";
 import { LuArrowRightFromLine, LuTrash } from "react-icons/lu";
-import { useSelector, useDispatch } from "react-redux";
-import { remove, clear } from "./cartSlice";
 import { Table } from "@chakra-ui/react";
-import { RootState } from "@/lib/definitions";
+import { useCart } from "../../../hooks/useCart";
 
 interface CartPanelProps {
   open: boolean;
@@ -12,8 +10,7 @@ interface CartPanelProps {
 }
 
 export default function CartPanel({ open = false, onClose }: CartPanelProps) {
-  const items = useSelector((state: RootState) => state.cart);
-  const dispatch = useDispatch();
+  const { cartItems: items, removeFromCart, clearCart } = useCart();
 
   const ProductsList = () => {
     return (
@@ -41,7 +38,7 @@ export default function CartPanel({ open = false, onClose }: CartPanelProps) {
                     <Table.Cell textAlign="end">
                       <AppButton
                         variant="danger"
-                        onClick={() => dispatch(remove(item.id))}>
+                        onClick={() => removeFromCart(item.id)}>
                         Remove
                       </AppButton>
                     </Table.Cell>
@@ -60,7 +57,7 @@ export default function CartPanel({ open = false, onClose }: CartPanelProps) {
       <>
         {items.length === 0 ? null : (
           <>
-            <AppButton variant="danger" onClick={() => dispatch(clear())}>
+            <AppButton variant="danger" onClick={() => clearCart()}>
               Clear cart <LuTrash />
             </AppButton>
             <AppButton>

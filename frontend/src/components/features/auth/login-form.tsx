@@ -1,10 +1,11 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import { Field, Input, Stack } from "@chakra-ui/react";
 import AppButton from "../../ui/AppButton";
+import { Field, Input, Stack } from "@chakra-ui/react";
+import { useForm } from "react-hook-form";
 import { useAuth } from "../../../contexts/AuthContext";
 import { useNavigate } from "react-router";
+import { useEffect } from "react";
 
 interface FormValues {
   email: string;
@@ -12,14 +13,25 @@ interface FormValues {
 }
 
 export default function LoginForm() {
-  const { login } = useAuth();
+  const { login, users } = useAuth(); // Add users from context
   const navigate = useNavigate();
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
+    setValue, // Add setValue to prefill form
   } = useForm<FormValues>();
+
+  // Prefill form with first user when users are loaded
+  useEffect(() => {
+    if (users.length < 4) {
+      // it means use didn't register a new one yet
+      const firstUser = users[0];
+      setValue("email", firstUser.email);
+      setValue("password", "password"); // Default password for demo users
+    }
+  }, [users, setValue]);
 
   const onSubmit = handleSubmit(async data => {
     const { email, password } = data;

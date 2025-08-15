@@ -2,7 +2,9 @@ import {
   ProductCanLoadMore,
   ProductResponse,
   LoginResponse,
+  RegisterResponse,
   VerifyTokenResponse,
+  ProductsListResponse,
 } from "./definitions";
 
 export interface IProductService {
@@ -10,6 +12,11 @@ export interface IProductService {
     category?: string | null;
   }): Promise<ProductResponse | undefined>;
   getProduct(id: string): Promise<ProductResponse | undefined>;
+  searchProducts({
+    name,
+  }: {
+    name: string;
+  }): Promise<ProductsListResponse | undefined>;
   canLoadMore(): ProductCanLoadMore;
 }
 
@@ -23,6 +30,17 @@ export interface IAuthService {
   }): Promise<LoginResponse>;
   verifyToken(): Promise<VerifyTokenResponse>;
   logout(): Promise<void>;
-  register(): Promise<{ status: string } | undefined>;
+  register({
+    firstName,
+    lastName,
+    email,
+    password,
+  }: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+  }): Promise<RegisterResponse>;
+  getUsers(): Promise<{ success: boolean; users: any[] }>; // Add this method
   resetPassword(): Promise<{ status: string } | undefined>;
 }

@@ -1,10 +1,10 @@
-import express from "express"
+import express from "express";
 const router = express.Router();
 import usersData from "../data/users.js";
 import { jwtGenerate, jwtVerify, invalidateToken } from "../jwttoken.js";
 
 // JWT verification endpoint
-router.post('/verify', async (req, res) => {
+router.post("/verify", async (req, res) => {
   try {
     // Get token from cookies instead of Authorization header
     const token = req.cookies.jwt;
@@ -12,7 +12,7 @@ router.post('/verify', async (req, res) => {
     if (!token) {
       return res.status(401).json({
         valid: false,
-        message: 'No token found in cookies'
+        message: "No token found in cookies",
       });
     }
 
@@ -27,7 +27,7 @@ router.post('/verify', async (req, res) => {
       // console.log('User not found for ID:', decoded.id);
       return res.status(401).json({
         valid: false,
-        message: 'User not found'
+        message: "User not found",
       });
     }
 
@@ -37,56 +37,58 @@ router.post('/verify', async (req, res) => {
       user: {
         id: user.id,
         email: user.email,
-        name: user.name
-      }
+        name: user.name,
+      },
     });
   } catch (error) {
     // console.error('Token verification error:', error);
     res.status(401).json({
       valid: false,
-      message: error.message || 'Token verification failed'
+      message: error.message || "Token verification failed",
     });
   }
 });
 
 // Logout endpoint
-router.post('/logout', async (req, res) => {
+router.post("/logout", async (req, res) => {
   try {
     const token = req.cookies.jwt;
 
     if (token) {
       // Invalidate the token on the server
       invalidateToken(token);
-      console.log('Token invalidated on logout');
+      console.log("Token invalidated on logout");
     }
 
     // Clear the cookie
-    res.clearCookie('jwt', {
+    res.clearCookie("jwt", {
       httpOnly: true,
       secure: false,
-      sameSite: 'lax',
-      path: '/'
+      sameSite: "lax",
+      path: "/",
     });
 
     res.status(200).json({
       success: true,
-      message: 'Logout successful'
+      message: "Logout successful",
     });
   } catch (error) {
-    console.error('Logout error:', error);
+    console.error("Logout error:", error);
     res.status(500).json({
       success: false,
-      message: 'Logout failed'
+      message: "Logout failed",
     });
   }
 });
 
 // Login POST endpoint
-router.post('/login', async (req, res) => {
+router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(400).json({ success: false, message: 'Email and password are required' });
+    return res
+      .status(400)
+      .json({ success: false, message: "Email and password are required" });
   }
 
   try {
@@ -94,55 +96,88 @@ router.post('/login', async (req, res) => {
 
     if (result.success) {
       // Generate JWT token
-      const token = jwtGenerate({ email: result.user.email, id: result.user.id }, { expiresIn: '1h' });
+      const token = jwtGenerate(
+        { email: result.user.email, id: result.user.id },
+        { expiresIn: "1h" }
+      );
 
       // Set cookie only on successful login
-      res.cookie('jwt', token, {
-        httpOnly: true,  // Prevent XSS attacks - not accessible by JavaScript
-        secure: false,   // Set to true in production with HTTPS
-        sameSite: 'lax',
+      res.cookie("jwt", token, {
+        httpOnly: true, // Prevent XSS attacks - not accessible by JavaScript
+        secure: false, // Set to true in production with HTTPS
+        sameSite: "lax",
         maxAge: 60 * 60 * 1000, // 1 hour (matching token expiration)
-        path: '/'
+        path: "/",
       });
 
       // Send response WITHOUT token in body (cookie only)
       res.status(200).json({
         success: true,
-        message: 'Login successful',
-        user: result.user
+        message: "Login successful",
+        user: result.user,
       });
     } else {
-      console.log('Login failed:', result.message);
+      console.log("Login failed:", result.message);
       res.status(401).json(result);
     }
   } catch (error) {
-    console.error('Login error:', error);
+    console.error("Login error:", error);
     res.status(500).json({
       success: false,
-      message: 'Internal server error during login'
+      message: "Internal server error during login",
     });
   }
 });
 
 // Register route
-router.get('/register', (req, res) => {
-  res.status(200).send('<h1>Register</h1><p>Create a new account</p>');
+router.get("/register", (req, res) => {
+  res.status(200).send("<h1>Register</h1><p>Create a new account</p>");
 });
 
 // Register POST endpoint
-router.post('/register', async (req, res) => {
-  const { name, email, password } = req.body;
+router.post("/register", async (req, res) => {
+  const { firstName, lastName, email, password } = req.body;
 
-  if (!name || !email || !password) {
-    return res.status(400).json({ success: false, message: 'Name, email and password are required' });
+  if (!firstName || !lastName || !email || !password) {
+    return res.status(400).json({
+      success: false,
+      message: "Name, email and password are required",
+    });
   }
 
+  const name = `${firstName} ${lastName}`;
+
   const result = await usersData.createUser({ name, email, password });
+  console.log("all users", usersData.getAllUsers());
 
   if (result.success) {
     res.status(201).json(result);
   } else {
     res.status(400).json(result);
+  }
+});
+
+// Get all users endpoint (for frontend to load on startup)
+router.get("/users", async (req, res) => {
+  try {
+    const allUsers = usersData.getAllUsers();
+    // Return users without sensitive data (no passwords)
+    const safeUsers = allUsers.map((user) => ({
+      id: user.id,
+      email: user.email,
+      name: user.name,
+    }));
+
+    res.status(200).json({
+      success: true,
+      users: safeUsers,
+    });
+  } catch (error) {
+    console.error("Error getting users:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error retrieving users",
+    });
   }
 });
 

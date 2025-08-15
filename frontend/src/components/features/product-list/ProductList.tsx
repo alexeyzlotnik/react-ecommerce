@@ -1,13 +1,10 @@
 import { useCallback, useEffect, useState, useRef } from "react";
 import ProductCard from "../product-card/ProductCard";
 import LoadMoreButton from "../load-more-button/LoadMoreButton";
-import { Grid } from "@chakra-ui/react";
-
-// cart
-import { useSelector, useDispatch } from "react-redux";
-import { add, remove } from "../cart/cartSlice";
-import { CartProduct, Product, RootState } from "@/lib/definitions";
+import { Grid, Box, Text, Button, Spinner } from "@chakra-ui/react";
+import { Product } from "@/lib/definitions";
 import { IProductService } from "@/lib/interfaces";
+import { useCart } from "../../../hooks/useCart";
 
 function ProductList({
   service,
@@ -18,45 +15,22 @@ function ProductList({
 }) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loadMoreLoading, setLoadMoreLoading] = useState<boolean>(false);
+  const [initialLoading, setInitialLoading] = useState<boolean>(true);
   const [canLoadMore, setCanLoadMore] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
   const hasInitialized = useRef<boolean>(false);
-
-  const cartItems = useSelector((state: RootState) => state.cart);
-  const dispatch = useDispatch();
+  const cart = useCart();
 
   const fetchProducts = useCallback(async () => {
-    const data = await service.getProducts({ category });
-    return data;
-  }, [service, category]);
-
-  // helper function
-  const isProductInCart = (productId: number) => {
-    return cartItems.filter(item => item.id === productId).length > 0;
-  };
-
-  const formatProductForCart = (product: Product): CartProduct | undefined => {
-    if (!product) return;
-
-    const { id, name, category, price } = product;
-
-    return {
-      id: id,
-      name: name,
-      category: category,
-      price: price,
-    };
-  };
-
-  const handleAddToCart = (product: Product): void => {
-    if (isProductInCart(product.id)) {
-      dispatch(remove(product.id));
-    } else {
-      const cartProduct = formatProductForCart(product);
-      if (cartProduct) {
-        dispatch(add(cartProduct));
-      }
+    try {
+      setError(null);
+      const data = await service.getProducts({ category });
+      return data;
+    } catch (err) {
+      setError("Failed to load products. Please try again.");
+      throw err;
     }
-  };
+  }, [service, category]);
 
   const handleLoadMore = async () => {
     setLoadMoreLoading(true);
@@ -80,6 +54,27 @@ function ProductList({
     }
   };
 
+  const retryLoad = async () => {
+    setInitialLoading(true);
+    setError(null);
+    try {
+      const initialProducts = await fetchProducts();
+      if (initialProducts?.data) {
+        // Ensure we're working with an array
+        const productsArray = Array.isArray(initialProducts.data)
+          ? initialProducts.data
+          : [initialProducts.data];
+
+        setProducts(productsArray);
+        setCanLoadMore(service.canLoadMore().value);
+      }
+    } catch (error) {
+      console.error("Error loading initial products:", error);
+    } finally {
+      setInitialLoading(false);
+    }
+  };
+
   useEffect(() => {
     // Prevent double fetching in development
     if (hasInitialized.current) return;
@@ -99,24 +94,71 @@ function ProductList({
         }
       } catch (error) {
         console.error("Error loading initial products:", error);
+      } finally {
+        setInitialLoading(false);
       }
     };
 
     loadInitialProducts();
   }, [service, fetchProducts]);
 
+  if (initialLoading) {
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minH="400px">
+        <Spinner size="xl" />
+        <Text ml={4}>Loading products...</Text>
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minH="400px">
+        <Box
+          border="1px solid"
+          borderColor="red.200"
+          borderRadius="md"
+          p={4}
+          bg="red.50"
+          maxW="md"
+          textAlign="center">
+          <Text color="red.600" fontWeight="medium" mb={3}>
+            {error}
+          </Text>
+          <Button onClick={retryLoad} colorScheme="blue" size="sm">
+            Try Again
+          </Button>
+        </Box>
+      </Box>
+    );
+  }
+
   const productList =
     products?.length === 0 ? (
-      // TODO: add skeleton here
-      <p>List empty</p>
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minH="200px"
+        textAlign="center">
+        <Text color="gray.500">No products found</Text>
+      </Box>
     ) : (
       products?.map(product => (
         <ProductCard
           colSpan={1}
           key={product.id}
           product={product}
-          handleAddToCart={handleAddToCart}
-          productIsAddedToCart={isProductInCart(product.id)}
+          handleAddToCart={cart.addToCart}
+          productIsAddedToCart={cart.isProductInCart(product.id)}
         />
       ))
     );

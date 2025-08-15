@@ -78,6 +78,16 @@ export interface LoginResponse {
   };
 }
 
+export interface RegisterResponse {
+  success: boolean;
+  message: string;
+  user?: {
+    id: number;
+    email: string;
+    name: string;
+  };
+}
+
 export interface VerifyTokenResponse {
   valid: boolean;
   user?: {
@@ -86,4 +96,9 @@ export interface VerifyTokenResponse {
     name: string;
   };
   message?: string;
+}
+
+export interface GetUsersResponse {
+  success: boolean;
+  users: User[];
 }

@@ -22,7 +22,7 @@ app.use((req, res, next) => {
   // Set specific origin instead of wildcard when using credentials
   res.setHeader(
     "Access-Control-Allow-Origin",
-    process.env.FRONTEND_URL || "http://localhost:5173"
+    process.env.FRONTEND_URL || "http://localhost:3000"
   ); // frontend URL
   res.setHeader(
     "Access-Control-Allow-Methods",
@@ -47,7 +47,7 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../public/index.html"));
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

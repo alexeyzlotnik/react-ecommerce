@@ -2,7 +2,7 @@ import { IAuthService } from "@/lib/interfaces";
 import { LoginResponse, VerifyTokenResponse } from "@/lib/definitions";
 
 export class AuthService implements IAuthService {
-  private BASE_URL = "http://localhost:3000";
+  private BASE_URL = "http://localhost:3001/api/auth";
 
   async login({
     email,
@@ -19,10 +19,7 @@ export class AuthService implements IAuthService {
     };
 
     try {
-      const response = await fetch(
-        `${this.BASE_URL}/api/auth/login`,
-        requestOptions
-      );
+      const response = await fetch(`${this.BASE_URL}/login`, requestOptions);
       const data = await response.json();
 
       return data;
@@ -40,10 +37,7 @@ export class AuthService implements IAuthService {
     };
 
     try {
-      const response = await fetch(
-        `${this.BASE_URL}/api/auth/verify`,
-        requestOptions
-      );
+      const response = await fetch(`${this.BASE_URL}/verify`, requestOptions);
       const data = await response.json();
       return data;
     } catch (error) {
@@ -65,7 +59,7 @@ export class AuthService implements IAuthService {
   async logout(): Promise<void> {
     try {
       // Call backend logout endpoint to invalidate token
-      const response = await fetch(`${this.BASE_URL}/api/auth/logout`, {
+      const response = await fetch(`${this.BASE_URL}/logout`, {
         method: "POST",
         credentials: "include",
       });
@@ -80,11 +74,53 @@ export class AuthService implements IAuthService {
     }
   }
 
-  async register(): Promise<{ status: string } | undefined> {
-    return Promise.resolve(undefined);
+  async register({
+    firstName,
+    lastName,
+    email,
+    password,
+  }: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+  }): Promise<LoginResponse> {
+    const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ firstName, lastName, email, password }),
+      credentials: "include" as RequestCredentials,
+    };
+
+    try {
+      const response = await fetch(`${this.BASE_URL}/register`, requestOptions);
+      const data = await response.json();
+
+      return data;
+    } catch (error) {
+      console.error("Register error:", error);
+      throw error;
+    }
   }
 
   async resetPassword(): Promise<{ status: string } | undefined> {
     return Promise.resolve(undefined);
+  }
+
+  async getUsers(): Promise<{ success: boolean; users: any[] }> {
+    const requestOptions = {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include" as RequestCredentials,
+    };
+
+    try {
+      const response = await fetch(`${this.BASE_URL}/users`, requestOptions);
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Get users error:", error);
+      throw error;
+    }
   }
 }
