@@ -36,3 +36,6 @@ tsconfig.*.tsbuildinfo
 *.sw?
 
 todolist.txt
+
+# Vite cache
+.vite/
