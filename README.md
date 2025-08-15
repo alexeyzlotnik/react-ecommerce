@@ -2,6 +2,11 @@
 
 A full-stack e-commerce application built with React (frontend) and Node.js (backend) in a monorepo structure.
 
+Stack:
+
+- <b>Frontend</b>: React.js, Typescript, Strapi (Headless CMS), Tailwind
+- <b>Backend</b>: Node.js, Express.js
+
 ## Project Structure
 
 ```
