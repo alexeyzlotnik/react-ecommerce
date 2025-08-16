@@ -8,12 +8,12 @@ function Menu() {
     },
     {
       name: "Shop",
-      url: "#",
+      url: "/shop",
     },
-    {
-      name: "Featured",
-      url: "#",
-    },
+    // {
+    //   name: "Featured",
+    //   url: "#",
+    // },
   ];
 
   const menuItems = menuElements.map((item, index) => (

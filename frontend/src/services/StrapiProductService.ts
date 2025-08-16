@@ -38,17 +38,21 @@ export class StrapiProductService implements IProductService {
     }
   }
 
-  // Public getters for debugging
-  get baseUrl(): string {
-    return this.STRAPI_BASE_URL;
+  // Reset pagination state - useful when switching contexts
+  public resetPagination(): void {
+    this.offset = 0;
+    this.loadedCount = 0;
+    this.totalAvailable = 0;
   }
 
-  get apiToken(): string {
-    return this.STRAPI_API_TOKEN;
-  }
-
-  get isConfigured(): boolean {
-    return !!(this.STRAPI_BASE_URL && this.STRAPI_API_TOKEN);
+  // Get current pagination state for debugging
+  public getPaginationState() {
+    return {
+      offset: this.offset,
+      loadedCount: this.loadedCount,
+      totalAvailable: this.totalAvailable,
+      numberToLoad: this.numberToLoad,
+    };
   }
 
   private setOffset(newVal: number): void {

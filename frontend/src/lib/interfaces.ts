@@ -18,6 +18,7 @@ export interface IProductService {
     name: string;
   }): Promise<ProductsListResponse | undefined>;
   canLoadMore(): ProductCanLoadMore;
+  resetPagination(): void;
 }
 
 export interface IAuthService {
@@ -41,6 +42,6 @@ export interface IAuthService {
     email: string;
     password: string;
   }): Promise<RegisterResponse>;
-  getUsers(): Promise<{ success: boolean; users: any[] }>; // Add this method
+  getUsers(): Promise<{ success: boolean; users: unknown[] }>; // Add this method
   resetPassword(): Promise<{ status: string } | undefined>;
 }

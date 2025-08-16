@@ -13,7 +13,10 @@ function Cart() {
 
   return (
     <>
-      <Button variant="subtle" onClick={() => setCartOpen(true)}>
+      <Button
+        variant="subtle"
+        onClick={() => setCartOpen(true)}
+        backgroundColor={count > 0 ? "orange.500" : undefined}>
         <LuShoppingBasket />
         {count}
       </Button>

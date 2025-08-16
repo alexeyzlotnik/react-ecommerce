@@ -22,7 +22,7 @@ export default function ProductPage() {
   const cart = useCart();
 
   const BackButton = () => (
-    <Button variant={"plain"} paddingLeft={0} onClick={() => navigate("/")}>
+    <Button variant={"plain"} paddingLeft={0} onClick={() => navigate("/shop")}>
       <LuArrowLeft />
       Back to shop
     </Button>

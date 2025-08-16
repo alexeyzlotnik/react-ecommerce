@@ -38,6 +38,7 @@ function ProductCard({
         width={{ base: 300, md: 380, lg: 500 }}
         roundedTop="md"
         fit="cover"
+        draggable="false"
       />
     ) : null;
   };
@@ -54,6 +55,7 @@ function ProductCard({
             fit="cover"
             className="cursor-pointer"
             onClick={() => navigate(`/product/${product.documentId}`)}
+            draggable="false"
           />
         </Card.Header>
       </>
@@ -65,6 +67,7 @@ function ProductCard({
       <HStack mt="2" mb="2">
         <Badge
           variant={"solid"}
+          backgroundColor={"orange.400"}
           className="cursor-pointer"
           onClick={() => navigate(`/category/${product.category.slug}`)}>
           {product.category.name}
@@ -101,7 +104,14 @@ function ProductCard({
             </Link>
           </Card.Title>
           <span>{product.category && <ProductBrand />}</span>
-          {showPrice ? <span>{product.price}$</span> : null}
+          {showPrice ? (
+            <>
+              <div className="flex gap-2">
+                <span>{product.price}$</span>{" "}
+                <span className="line-through">{product.originalPrice}$</span>
+              </div>
+            </>
+          ) : null}
         </Card.Body>
         <ProductBuyButton />
       </>
@@ -116,15 +126,15 @@ function ProductCard({
           width={"full"}
           alignItems={"flex-start"}>
           <Card.Body>
-            <Card.Title mb="2">
-              <h1>{product.name}</h1>
+            <Card.Title mb="2" as={"h1"}>
+              {product.name}
             </Card.Title>
             <Card.Description>
-              <p className="flex gap-2">
+              <span className="flex gap-2">
                 Price:
                 <span>{product.price}$</span>
                 <span className="line-through">{product.originalPrice}$</span>
-              </p>
+              </span>
             </Card.Description>
             <ProductBrand />
           </Card.Body>

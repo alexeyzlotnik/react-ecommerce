@@ -20,15 +20,21 @@ export default function AppButton({
   children,
 }: ButtonProps) {
   const buttonBackground = {
-    primary: "green.emphasized",
-    secondary: "green.100",
-    danger: "red.muted",
+    primary: "orange.500",
+    secondary: "orange.700",
+    danger: "red.600",
   };
 
   const buttonTextColor = {
     primary: "white",
-    secondary: "green",
+    secondary: "white",
     danger: "white",
+  };
+
+  const buttonBackgroundHover = {
+    primary: "orange.600",
+    secondary: "orange.800",
+    danger: "red.700",
   };
 
   return (
@@ -39,7 +45,8 @@ export default function AppButton({
       onClick={onClick}
       loading={loading}
       loadingText={loadingText}
-      type={type}>
+      type={type}
+      _hover={{ bg: buttonBackgroundHover[variant] }}>
       {children}
     </Button>
   );

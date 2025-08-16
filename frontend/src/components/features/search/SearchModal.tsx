@@ -9,23 +9,24 @@ const service = new StrapiProductService(_numberToLoad);
 
 interface SearchModalProps {
   open: boolean;
-  title?: string;
   onClose: () => void;
 }
 
-export const SearchModal = ({ open, title, onClose }: SearchModalProps) => {
+export const SearchModal = ({ open, onClose }: SearchModalProps) => {
   return (
-    <Dialog.Root lazyMount open={open} onOpenChange={() => onClose()}>
+    <Dialog.Root
+      lazyMount
+      open={open}
+      onOpenChange={() => onClose()}
+      size={"lg"}>
       <Portal>
         <Dialog.Backdrop />
         <Dialog.Positioner>
           <Dialog.Content>
-            <Dialog.Header>
-              <Dialog.Title>{title}</Dialog.Title>
-            </Dialog.Header>
-            <Dialog.Body>
+            <Dialog.Body className="!py-8">
               <SearchInput
                 searchProducts={service.searchProducts.bind(service)}
+                onTriggerClose={() => onClose()}
               />
             </Dialog.Body>
             <Dialog.CloseTrigger asChild>

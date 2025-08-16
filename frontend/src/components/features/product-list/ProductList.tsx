@@ -9,9 +9,11 @@ import { useCart } from "../../../hooks/useCart";
 function ProductList({
   service,
   category,
+  showLoadMore = true,
 }: {
   service: IProductService;
   category?: string | null;
+  showLoadMore?: boolean;
 }) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loadMoreLoading, setLoadMoreLoading] = useState<boolean>(false);
@@ -57,6 +59,8 @@ function ProductList({
   const retryLoad = async () => {
     setInitialLoading(true);
     setError(null);
+    // Reset service state when retrying
+    service.resetPagination();
     try {
       const initialProducts = await fetchProducts();
       if (initialProducts?.data) {
@@ -76,9 +80,9 @@ function ProductList({
   };
 
   useEffect(() => {
-    // Prevent double fetching in development
-    if (hasInitialized.current) return;
-    hasInitialized.current = true;
+    // Reset service pagination state when component mounts or service changes
+    service.resetPagination();
+    hasInitialized.current = false;
 
     const loadInitialProducts = async () => {
       try {
@@ -100,6 +104,11 @@ function ProductList({
     };
 
     loadInitialProducts();
+
+    // Cleanup: reset service when component unmounts
+    return () => {
+      service.resetPagination();
+    };
   }, [service, fetchProducts]);
 
   if (initialLoading) {
@@ -177,7 +186,7 @@ function ProductList({
         {productList}
       </Grid>
 
-      {products?.length > 0 && (
+      {showLoadMore && products?.length > 0 && (
         <LoadMoreButton
           loading={loadMoreLoading}
           canLoadMore={canLoadMore}

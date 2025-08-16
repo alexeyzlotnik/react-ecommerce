@@ -4,6 +4,7 @@ import { Routes, Route } from "react-router";
 import { RequireNoAuth } from "../components/auth/ProtectedRoute";
 
 import HomePage from "../pages/HomePage";
+import ShopPage from "../pages/ShopPage";
 import ProductPage from "../pages/ProductPage";
 import CategoryPage from "../pages/CategoryPage";
 import NotFoundPage from "../pages/NotFoundPage";
@@ -16,6 +17,7 @@ function App() {
       <Routes>
         <Route path="/" element={<DefaultLayout />}>
           <Route index element={<HomePage />} />
+          <Route path="shop" element={<ShopPage />} />
           <Route path="category/:category" element={<CategoryPage />} />
           <Route path="product/:product" element={<ProductPage />} />
           <Route path="*" element={<NotFoundPage />} />

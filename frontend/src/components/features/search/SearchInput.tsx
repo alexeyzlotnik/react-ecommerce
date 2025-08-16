@@ -12,16 +12,22 @@ import { useState } from "react";
 import { useAsync } from "react-use";
 import { useDebounce } from "react-use";
 import { Product, ProductsListResponse } from "@/lib/definitions";
+import { useNavigate } from "react-router";
 
 interface SearchInputProps {
   searchProducts: (params: {
     name: string;
   }) => Promise<ProductsListResponse | undefined>;
+  onTriggerClose: () => void;
 }
 
-export const SearchInput = ({ searchProducts }: SearchInputProps) => {
+export const SearchInput = ({
+  searchProducts,
+  onTriggerClose,
+}: SearchInputProps) => {
   const [inputValue, setInputValue] = useState("");
   const [debouncedValue, setDebouncedValue] = useState("");
+  const navigate = useNavigate();
 
   // Debounce the input value with 300ms delay
   useDebounce(
@@ -32,10 +38,16 @@ export const SearchInput = ({ searchProducts }: SearchInputProps) => {
     [inputValue]
   );
 
+  const openSelectedProduct = (productId: string): void => {
+    if (!productId) return;
+    navigate(`product/${productId}`);
+    onTriggerClose();
+  };
+
   const { collection, set } = useListCollection<Product>({
     initialItems: [],
     itemToString: item => item.name,
-    itemToValue: item => item.name,
+    itemToValue: item => item.documentId.toString(),
   });
 
   const state = useAsync(async () => {
@@ -54,9 +66,10 @@ export const SearchInput = ({ searchProducts }: SearchInputProps) => {
   return (
     <Combobox.Root
       collection={collection}
-      placeholder="Example: C-3PO"
+      placeholder="placeholder"
       onInputValueChange={e => setInputValue(e.inputValue)}
-      positioning={{ sameWidth: true, placement: "bottom-start" }}>
+      positioning={{ sameWidth: true, placement: "bottom-start" }}
+      onSelect={e => openSelectedProduct(e.itemValue)}>
       <Combobox.Label>Search Products</Combobox.Label>
 
       <Combobox.Control>
@@ -86,9 +99,9 @@ export const SearchInput = ({ searchProducts }: SearchInputProps) => {
                     <Span fontWeight="medium" truncate>
                       {product.name}
                     </Span>
-                    {/* <Span color="fg.muted" truncate>
-                      {character.height}cm / {character.mass}kg
-                    </Span> */}
+                    <Span color="fg.muted" truncate>
+                      {product.price}$
+                    </Span>
                   </HStack>
                   <Combobox.ItemIndicator />
                 </Combobox.Item>
