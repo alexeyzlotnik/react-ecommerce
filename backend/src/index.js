@@ -10,6 +10,10 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
+// Load environment variables
+import dotenv from "dotenv";
+dotenv.config();
+
 // Middleware
 app.use(bodyParser.json());
 app.use(cookieParser()); // Add cookie parser middleware
@@ -20,10 +24,8 @@ app.use(express.static(path.join(__dirname, "../public")));
 app.use((req, res, next) => {
   // set headers to each response
   // Set specific origin instead of wildcard when using credentials
-  res.setHeader(
-    "Access-Control-Allow-Origin",
-    process.env.FRONTEND_URL || "http://localhost:3000"
-  ); // frontend URL
+  const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
+  res.setHeader("Access-Control-Allow-Origin", frontendUrl); // frontend URL
   res.setHeader(
     "Access-Control-Allow-Methods",
     "GET, POST, PUT, PATCH, DELETE, OPTIONS"
@@ -48,6 +50,11 @@ app.get("*", (req, res) => {
 });
 
 const PORT = process.env.PORT || 3001;
+const NODE_ENV = process.env.NODE_ENV || "development";
+
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT} in ${NODE_ENV} mode`);
+  console.log(
+    `Frontend URL: ${process.env.FRONTEND_URL || "http://localhost:3000"}`
+  );
 });

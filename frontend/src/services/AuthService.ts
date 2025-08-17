@@ -2,7 +2,7 @@ import { IAuthService } from "@/lib/interfaces";
 import { LoginResponse, VerifyTokenResponse } from "@/lib/definitions";
 
 export class AuthService implements IAuthService {
-  private BASE_URL = "http://localhost:3001/api/auth";
+  private BASE_URL = import.meta.env.VITE_BACKEND_API_URL + "/api/auth";
 
   async login({
     email,
@@ -107,7 +107,7 @@ export class AuthService implements IAuthService {
     return Promise.resolve(undefined);
   }
 
-  async getUsers(): Promise<{ success: boolean; users: any[] }> {
+  async getUsers(): Promise<{ success: boolean; users: unknown[] }> {
     const requestOptions = {
       method: "GET",
       headers: { "Content-Type": "application/json" },
