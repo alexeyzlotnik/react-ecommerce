@@ -1,8 +1,8 @@
 import {
   ProductResponse,
-  ProductsListResponse,
   SingleProductResponse,
   ProductCanLoadMore,
+  Product,
 } from "@/lib/definitions";
 import { IProductService } from "@/lib/interfaces";
 import { strapi } from "@strapi/client";
@@ -14,18 +14,10 @@ interface FetchClientProps {
 }
 
 export class StrapiProductService implements IProductService {
-  private loadedCount: number;
-  private totalAvailable: number;
-  private numberToLoad: number;
-  private offset: number;
   private STRAPI_BASE_URL: string;
   private STRAPI_API_TOKEN: string;
 
-  constructor(numberToLoad?: number) {
-    this.loadedCount = 0;
-    this.totalAvailable = 0;
-    this.numberToLoad = numberToLoad || 8;
-    this.offset = 0;
+  constructor() {
     this.STRAPI_BASE_URL = import.meta.env.VITE_STRAPI_BASE_URL || "";
     this.STRAPI_API_TOKEN = import.meta.env.VITE_STRAPI_API_TOKEN || "";
 
@@ -38,36 +30,10 @@ export class StrapiProductService implements IProductService {
     }
   }
 
-  // Reset pagination state - useful when switching contexts
-  public resetPagination(): void {
-    this.offset = 0;
-    this.loadedCount = 0;
-    this.totalAvailable = 0;
-  }
-
-  // Get current pagination state for debugging
-  public getPaginationState() {
-    return {
-      offset: this.offset,
-      loadedCount: this.loadedCount,
-      totalAvailable: this.totalAvailable,
-      numberToLoad: this.numberToLoad,
-    };
-  }
-
-  private setOffset(newVal: number): void {
-    this.offset = newVal;
-  }
-
-  private setLoadedCount(newVal: number): void {
-    this.loadedCount = newVal;
-  }
-
-  async fetchClient({
-    type,
-    method,
-    query,
-  }: FetchClientProps): Promise<ProductResponse | undefined> {
+  async fetchClient({ type, method, query }: FetchClientProps): Promise<{
+    data: unknown[];
+    total: number;
+  }> {
     if (!this.STRAPI_BASE_URL) {
       throw new Error("Strapi base URL is not configured");
     }
@@ -104,8 +70,13 @@ export class StrapiProductService implements IProductService {
 
   async getProducts(filters?: {
     category?: string;
-  }): Promise<ProductsListResponse | undefined> {
+    offset?: number;
+    limit?: number;
+  }): Promise<ProductResponse> {
     try {
+      const offset = filters?.offset || 0;
+      const limit = filters?.limit || 4;
+
       const query = new URLSearchParams({
         "populate[image][fields][0]": "url",
         "populate[image][fields][1]": "name",
@@ -113,8 +84,8 @@ export class StrapiProductService implements IProductService {
         "populate[image_thumbnail][fields][1]": "name",
         "populate[category][fields][0]": "name",
         "populate[category][fields][1]": "slug",
-        "pagination[start]": this.offset.toString(),
-        "pagination[limit]": this.numberToLoad.toString(),
+        "pagination[start]": offset.toString(),
+        "pagination[limit]": limit.toString(),
       });
 
       if (filters?.category) {
@@ -129,26 +100,60 @@ export class StrapiProductService implements IProductService {
 
       if (!products || !products.data) {
         console.warn("No products data received");
-        return undefined;
+        return {
+          data: [],
+          pagination: {
+            offset,
+            limit,
+            total: 0,
+            hasMore: false,
+            nextOffset: offset,
+          },
+        };
       }
 
       if (Array.isArray(products?.data)) {
         if (products?.data?.length === 0) {
           console.log("Products array is empty");
-          return undefined;
+          return {
+            data: [],
+            pagination: {
+              offset,
+              limit,
+              total: products.total || 0,
+              hasMore: false,
+              nextOffset: offset,
+            },
+          };
         }
       } else {
         console.warn("Products data is not an array:", typeof products.data);
-        return undefined;
+        return {
+          data: [],
+          pagination: {
+            offset,
+            limit,
+            total: 0,
+            hasMore: false,
+            nextOffset: offset,
+          },
+        };
       }
 
-      this.setOffset(this.offset + this.numberToLoad);
-      if (Array.isArray(products?.data)) {
-        this.setLoadedCount(this.loadedCount + (products?.data?.length || 0));
-      }
-      this.totalAvailable = products?.total || 0;
+      const total = products?.total || 0;
+      const nextOffset = offset + limit;
+      const hasMore = nextOffset < total;
 
-      return products as ProductsListResponse;
+      return {
+        data: products.data as Product[],
+        pagination: {
+          offset,
+          limit,
+          total,
+          hasMore,
+          nextOffset,
+        },
+      };
     } catch (error) {
       console.error("Error in getProducts:", error);
       throw error;
@@ -208,7 +213,7 @@ export class StrapiProductService implements IProductService {
     name,
   }: {
     name: string;
-  }): Promise<ProductsListResponse | undefined> {
+  }): Promise<ProductResponse | undefined> {
     try {
       const query = new URLSearchParams({
         "populate[image][fields][0]": "url",
@@ -247,17 +252,34 @@ export class StrapiProductService implements IProductService {
         console.warn("Products data is not an array:", typeof products.data);
         return undefined;
       }
-      return products as ProductsListResponse;
+
+      // Return with pagination info
+      return {
+        data: products.data as Product[],
+        pagination: {
+          offset: 0,
+          limit: 20,
+          total: products.total || 0,
+          hasMore: false,
+          nextOffset: 0,
+        },
+      };
     } catch (error) {
       console.error("Error in searchProducts:", error);
       throw error;
     }
   }
 
+  // This method is no longer needed since pagination info comes with the response
+  // But keeping it for backward compatibility - you can remove it later
   canLoadMore(): ProductCanLoadMore {
+    // This should not be used anymore - pagination info comes from getProducts response
+    console.warn(
+      "canLoadMore() is deprecated. Use pagination info from getProducts response instead."
+    );
     return {
-      value: this.loadedCount < this.totalAvailable,
-      count: this.totalAvailable - this.loadedCount,
+      value: false,
+      count: 0,
     };
   }
 }

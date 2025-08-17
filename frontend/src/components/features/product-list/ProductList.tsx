@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, useRef } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ProductCard from "../product-card/ProductCard";
 import LoadMoreButton from "../load-more-button/LoadMoreButton";
 import { Grid, Box, Text, Button, Spinner } from "@chakra-ui/react";
@@ -10,18 +10,24 @@ function ProductList({
   service,
   category,
   showLoadMore = true,
+  limit = 8,
 }: {
   service: IProductService;
   category?: string | null;
   showLoadMore?: boolean;
+  limit?: number;
 }) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loadMoreLoading, setLoadMoreLoading] = useState<boolean>(false);
   const [initialLoading, setInitialLoading] = useState<boolean>(true);
-  const [canLoadMore, setCanLoadMore] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const hasInitialized = useRef<boolean>(false);
   const cart = useCart();
+  const [pagination, setPagination] = useState({
+    offset: 0,
+    loadedCount: 0,
+    totalAvailable: 0,
+    hasMore: true,
+  });
 
   const fetchProducts = useCallback(async () => {
     try {
@@ -38,17 +44,24 @@ function ProductList({
     setLoadMoreLoading(true);
 
     try {
-      const newProductsResponse = await fetchProducts();
+      const result = await service.getProducts({
+        category,
+        offset: pagination.offset + pagination.loadedCount, // Next offset
+        limit: limit,
+      });
 
-      if (newProductsResponse?.data) {
-        // Ensure we're working with an array before spreading
-        const newProducts = Array.isArray(newProductsResponse.data)
-          ? newProductsResponse.data
-          : [newProductsResponse.data];
+      if (result?.data) {
+        setProducts(prev => [...prev, ...result.data]);
 
-        setProducts(prevProducts => [...prevProducts, ...newProducts]);
+        // Update pagination state based on response
+        setPagination(prev => ({
+          ...prev,
+          offset: result.pagination.nextOffset,
+          loadedCount: prev.loadedCount + result.data.length,
+          totalAvailable: result.pagination.total,
+          hasMore: result.pagination.hasMore,
+        }));
       }
-      setCanLoadMore(service.canLoadMore().value);
     } catch (error) {
       console.error("Error loading more products:", error);
     } finally {
@@ -59,8 +72,6 @@ function ProductList({
   const retryLoad = async () => {
     setInitialLoading(true);
     setError(null);
-    // Reset service state when retrying
-    service.resetPagination();
     try {
       const initialProducts = await fetchProducts();
       if (initialProducts?.data) {
@@ -70,7 +81,13 @@ function ProductList({
           : [initialProducts.data];
 
         setProducts(productsArray);
-        setCanLoadMore(service.canLoadMore().value);
+        // Set initial pagination state
+        setPagination({
+          offset: 0,
+          loadedCount: initialProducts.data.length,
+          totalAvailable: initialProducts.pagination.total,
+          hasMore: initialProducts.pagination.hasMore,
+        });
       }
     } catch (error) {
       console.error("Error loading initial products:", error);
@@ -80,21 +97,24 @@ function ProductList({
   };
 
   useEffect(() => {
-    // Reset service pagination state when component mounts or service changes
-    service.resetPagination();
-    hasInitialized.current = false;
-
     const loadInitialProducts = async () => {
       try {
-        const initialProducts = await fetchProducts();
-        if (initialProducts?.data) {
-          // Ensure we're working with an array
-          const productsArray = Array.isArray(initialProducts.data)
-            ? initialProducts.data
-            : [initialProducts.data];
+        const result = await service.getProducts({
+          category,
+          offset: 0,
+          limit: limit,
+        });
 
-          setProducts(productsArray);
-          setCanLoadMore(service.canLoadMore().value);
+        if (result?.data) {
+          setProducts(result.data);
+
+          // Set initial pagination state
+          setPagination({
+            offset: 0,
+            loadedCount: result.data.length,
+            totalAvailable: result.pagination.total,
+            hasMore: result.pagination.hasMore,
+          });
         }
       } catch (error) {
         console.error("Error loading initial products:", error);
@@ -104,12 +124,7 @@ function ProductList({
     };
 
     loadInitialProducts();
-
-    // Cleanup: reset service when component unmounts
-    return () => {
-      service.resetPagination();
-    };
-  }, [service, fetchProducts]);
+  }, [service, fetchProducts, category]);
 
   if (initialLoading) {
     return (
@@ -186,14 +201,19 @@ function ProductList({
         {productList}
       </Grid>
 
-      {showLoadMore && products?.length > 0 && (
+      {showLoadMore && products?.length > 0 && pagination.hasMore && (
         <LoadMoreButton
           loading={loadMoreLoading}
-          canLoadMore={canLoadMore}
+          canLoadMore={{
+            value: pagination.hasMore,
+            count: pagination.totalAvailable - pagination.loadedCount,
+          }}
           onClick={handleLoadMore}>
           {loadMoreLoading
             ? "Loading..."
-            : `Load + ${service.canLoadMore().count} more products`}
+            : `Load + ${
+                pagination.totalAvailable - pagination.loadedCount
+              } more products`}
         </LoadMoreButton>
       )}
     </>

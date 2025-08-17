@@ -20,17 +20,21 @@ export interface Product {
   };
 }
 
+export interface ProductPagination {
+  offset: number;
+  limit: number;
+  total: number;
+  hasMore: boolean;
+  nextOffset: number;
+}
+
+// Base response interface with pagination
 export interface ProductResponse {
-  data: Product[] | Product;
-  total: number;
-}
-
-// More specific types for different use cases
-export interface ProductsListResponse {
   data: Product[];
-  total: number;
+  pagination: ProductPagination;
 }
 
+// For single product responses (no pagination needed)
 export interface SingleProductResponse {
   data: Product;
   total: number;
@@ -98,7 +102,7 @@ export interface VerifyTokenResponse {
   message?: string;
 }
 
-export interface GetUsersResponse {
-  success: boolean;
-  users: User[];
-}
+// export interface GetUsersResponse {
+//   success: boolean;
+//   users: User[];
+// }

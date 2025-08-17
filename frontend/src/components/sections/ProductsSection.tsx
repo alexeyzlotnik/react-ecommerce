@@ -22,7 +22,7 @@ export const ProductsSection = ({ service }: ProductsSectionProps) => {
             </Text>
           </VStack>
 
-          <ProductList service={service} showLoadMore={false} />
+          <ProductList service={service} showLoadMore={false} limit={4} />
           <AppButton
             size="lg"
             variant="primary"

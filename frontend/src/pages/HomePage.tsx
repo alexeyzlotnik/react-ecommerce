@@ -5,8 +5,7 @@ import {
 } from "../components/sections";
 import { StrapiProductService } from "../services/StrapiProductService";
 
-const _numberToLoad: number = 4;
-const featuredProductService = new StrapiProductService(_numberToLoad);
+const featuredProductService = new StrapiProductService();
 
 export default function HomePage() {
   return (

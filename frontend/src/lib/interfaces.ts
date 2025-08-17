@@ -4,21 +4,22 @@ import {
   LoginResponse,
   RegisterResponse,
   VerifyTokenResponse,
-  ProductsListResponse,
+  SingleProductResponse,
 } from "./definitions";
 
 export interface IProductService {
   getProducts(filters?: {
     category?: string | null;
-  }): Promise<ProductResponse | undefined>;
-  getProduct(id: string): Promise<ProductResponse | undefined>;
+    offset?: number;
+    limit?: number;
+  }): Promise<ProductResponse>;
+  getProduct(id: string): Promise<SingleProductResponse | undefined>;
   searchProducts({
     name,
   }: {
     name: string;
-  }): Promise<ProductsListResponse | undefined>;
+  }): Promise<ProductResponse | undefined>;
   canLoadMore(): ProductCanLoadMore;
-  resetPagination(): void;
 }
 
 export interface IAuthService {

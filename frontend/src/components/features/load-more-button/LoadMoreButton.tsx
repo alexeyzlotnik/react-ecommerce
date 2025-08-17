@@ -3,12 +3,18 @@ import AppButton from "../../ui/AppButton";
 
 function LoadMoreButton({
   loading = false,
-  canLoadMore = true,
+  canLoadMore = {
+    value: false,
+    count: 0,
+  },
   onClick,
   children,
 }: {
   loading?: boolean;
-  canLoadMore?: boolean;
+  canLoadMore?: {
+    value: boolean;
+    count: number;
+  };
   onClick?: () => void;
   children: React.ReactNode;
 }) {
