@@ -1,3 +1,159 @@
+/* Header Container */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: var(--chakra-colors-bg);
+  border-bottom: 1px solid var(--chakra-colors-chakra-border-color);
+  z-index: 1000;
+  padding: 0;
+  box-shadow: 1px 1px 4px 0px var(--chakra-colors-bg-muted);
+}
+
+/* Header Brand */
+.header-brand {
+  flex-shrink: 0;
+}
+
+.header-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--chakra-colors-chakra-body-text);
+}
+
+/* Mobile Menu Toggle */
+.mobile-menu-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--chakra-colors-chakra-body-text);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  transition: background-color 0.2s;
+}
+
+.mobile-menu-toggle:hover {
+  background-color: var(--chakra-colors-chakra-subtle-bg);
+}
+
+/* Desktop Navigation - Hidden on mobile */
+.desktop-nav {
+  display: none;
+}
+
+/* Desktop Search - Hidden on mobile */
+.desktop-search {
+  display: none;
+}
+
+/* Desktop Actions - Hidden on mobile */
+.desktop-actions {
+  display: none;
+}
+
+/* Mobile Actions - Always visible */
+.mobile-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Mobile Menu Overlay */
+.mobile-menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1001;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s;
+}
+
+.mobile-menu-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.mobile-menu-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--chakra-colors-chakra-body-bg);
+  padding: 1rem;
+  overflow-y: auto;
+  transform: translateX(-100%);
+  transition: transform 0.3s;
+  background: var(--chakra-colors-bg-muted);
+}
+
+.mobile-menu-overlay.open .mobile-menu-content {
+  transform: translateX(0);
+}
+
+.mobile-menu-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--chakra-colors-chakra-border-color);
+}
+
+.mobile-menu-header h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.mobile-menu-close {
+  background: none;
+  border: none;
+  color: var(--chakra-colors-chakra-body-text);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  transition: background-color 0.2s;
+}
+
+.mobile-menu-close:hover {
+  background-color: var(--chakra-colors-chakra-subtle-bg);
+}
+
+.mobile-menu-search {
+  margin-bottom: 2rem;
+}
+
+.mobile-menu-nav {
+  margin-bottom: 2rem;
+}
+
+.mobile-menu-auth {
+  border-top: 1px solid var(--chakra-colors-chakra-border-color);
+  padding-top: 1rem;
+}
+
+.mobile-user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.mobile-user-name {
+  font-size: 0.875rem;
+  color: var(--chakra-colors-chakra-body-text);
+}
+
+/* Menu Styles */
 .menu-wrapper {
   display: flex;
   align-items: center;
@@ -5,9 +161,80 @@
 
 .menu {
   display: flex;
-  column-gap: 1rem;
+  flex-direction: column;
+  gap: 1rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
-/* .menu-item__link {
-  color: #fff;
-} */
+.menu-item {
+  margin: 0;
+}
+
+.menu-item__link {
+  display: block;
+  padding: 0.75rem 1rem;
+  color: var(--chakra-colors-chakra-body-text);
+  text-decoration: none;
+  border-radius: 0.375rem;
+  transition: background-color 0.2s;
+  font-weight: 500;
+}
+
+.menu-item__link:hover {
+  background-color: var(--chakra-colors-chakra-subtle-bg);
+}
+
+/* Tablet and Desktop Styles */
+@media (min-width: 768px) {
+  .header-container {
+    padding: 1rem 2rem;
+  }
+
+  .mobile-menu-toggle {
+    display: none;
+  }
+
+  .desktop-nav {
+    display: block;
+  }
+
+  .desktop-search {
+    display: block;
+    flex: 1;
+    max-width: 400px;
+  }
+
+  .desktop-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .mobile-actions {
+    display: none;
+  }
+
+  .mobile-menu-overlay {
+    display: none;
+  }
+
+  .menu {
+    flex-direction: row;
+  }
+
+  .menu-item__link {
+    padding: 0.5rem 1rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .header-container {
+    padding: 1rem 3rem;
+  }
+
+  .desktop-search {
+    max-width: 500px;
+  }
+}

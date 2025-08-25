@@ -5,7 +5,7 @@ import RegisterForm from "../../components/features/auth/register-form";
 export default function RegisterPage() {
   return (
     <>
-      <Card.Root width="500px" className="!mx-auto">
+      <Card.Root width={{ base: "100%", md: "500px" }} className="!mx-auto">
         <Card.Body gap="2">
           <Card.Title>Create your account</Card.Title>
           <RegisterForm />

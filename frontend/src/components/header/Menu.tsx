@@ -1,6 +1,10 @@
 import { Link } from "react-router";
 
-function Menu() {
+interface MenuProps {
+  onItemClick?: () => void;
+}
+
+function Menu({ onItemClick }: MenuProps) {
   const menuElements = [
     {
       name: "Home",
@@ -16,9 +20,15 @@ function Menu() {
     // },
   ];
 
+  const handleItemClick = () => {
+    if (onItemClick) {
+      onItemClick();
+    }
+  };
+
   const menuItems = menuElements.map((item, index) => (
     <li className="menu-item" key={index}>
-      <Link to={item.url} className="menu-item__link">
+      <Link to={item.url} className="menu-item__link" onClick={handleItemClick}>
         {item.name}
       </Link>
     </li>

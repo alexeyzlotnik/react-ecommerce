@@ -4,8 +4,7 @@ import { CloseButton, Dialog, Portal } from "@chakra-ui/react";
 import { SearchInput } from "./SearchInput";
 import { StrapiProductService } from "../../../services/StrapiProductService";
 
-const _numberToLoad: number = 8;
-const service = new StrapiProductService(_numberToLoad);
+const service = new StrapiProductService();
 
 interface SearchModalProps {
   open: boolean;
